@@ -1,0 +1,25 @@
+# Oracle Luck Bot - Requirements
+
+# Telegram Bot
+python-telegram-bot==22.5
+
+# Web3 / TON Integration
+pytoniq==0.1.40
+pytoniq-core==0.1.42
+tonconnect==0.1.1
+
+# Database
+motor==3.3.1
+pymongo==4.6.1
+
+# AI Integration (Gemini)
+google-generativeai==0.3.2
+
+# Utilities
+python-dotenv==1.0.0
+aiohttp==3.9.1
+requests==2.31.0
+
+# Date/Time
+python-dateutil==2.8.2
+pytz==2023.3
