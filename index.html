@@ -2,12 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🔮 Храм Судьбы</title>
-    
-    <!-- Telegram Web App SDK -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🔮 Oracle Luck - Таро</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -16,268 +14,116 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            color: #e8d5c4;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e0a3c 0%, #2d1b69 100%);
+            color: #ffffff;
             min-height: 100vh;
-            overflow-x: hidden;
             padding: 20px;
         }
         
-        /* Звездный фон */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #d4af37;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-        
-        /* Контейнер */
         .container {
-            position: relative;
-            z-index: 1;
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
         }
         
-        /* Заголовок */
-        .header {
+        header {
             text-align: center;
-            padding: 20px 0 30px;
-            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
             margin-bottom: 30px;
-        }
-        
-        .header h1 {
-            font-size: 28px;
-            color: #d4af37;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-        }
-        
-        .header p {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        
-        /* Приветствие */
-        .welcome {
-            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #c79cff;
+            font-size: 0.9em;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .welcome h2 {
-            color: #d4af37;
             margin-bottom: 15px;
-            font-size: 20px;
-        }
-        
-        .welcome p {
-            line-height: 1.6;
-            opacity: 0.9;
-        }
-        
-        /* Расклады */
-        .spreads-grid {
-            display: grid;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .spread-card {
-            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         
-        .spread-card:hover {
+        .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-            border-color: #d4af37;
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
         }
         
-        .spread-card:active {
-            transform: translateY(-2px);
-        }
-        
-        .spread-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .card h3 {
             margin-bottom: 10px;
+            color: #ffd700;
         }
         
-        .spread-title {
-            font-size: 18px;
-            color: #d4af37;
-            font-weight: bold;
+        .card p {
+            color: #e0d0ff;
+            font-size: 0.9em;
+            line-height: 1.5;
         }
         
-        .spread-badge {
-            background: rgba(76, 175, 80, 0.2);
-            color: #4caf50;
-            padding: 5px 12px;
+        .price {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            padding: 5px 15px;
             border-radius: 20px;
-            font-size: 12px;
-        }
-        
-        .spread-description {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-        
-        .spread-details {
-            font-size: 12px;
-            opacity: 0.6;
-        }
-        
-        /* Кнопки */
-        .btn {
-            background: linear-gradient(135deg, #d4af37 0%, #c8a030 100%);
-            color: #0f0c29;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 16px;
+            margin-top: 10px;
             font-weight: bold;
-            cursor: pointer;
+            color: #ffd700;
+        }
+        
+        .free-badge {
+            background: rgba(0, 255, 127, 0.2);
+            color: #00ff7f;
+        }
+        
+        button {
             width: 100%;
-            margin: 10px 0;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-        }
-        
-        .btn:active {
-            transform: scale(0.95);
-        }
-        
-        /* Футер */
-        .footer {
-            text-align: center;
-            padding: 30px 0;
-            opacity: 0.6;
-            font-size: 12px;
-        }
-        
-        /* Модальное окно */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 2px solid #d4af37;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 100%;
-            position: relative;
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: #d4af37;
-            font-size: 24px;
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-        }
-        
-        .card-result {
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .card-emoji {
-            font-size: 72px;
-            margin: 20px 0;
-        }
-        
-        .card-name {
-            font-size: 24px;
-            color: #d4af37;
-            margin: 10px 0;
-        }
-        
-        .card-keywords {
-            font-size: 14px;
-            opacity: 0.7;
-            font-style: italic;
-            margin-bottom: 20px;
-        }
-        
-        .interpretation {
-            background: rgba(212, 175, 55, 0.1);
             padding: 15px;
+            background: linear-gradient(135deg, #8a2be2 0%, #9370db 100%);
+            color: white;
+            border: none;
             border-radius: 10px;
-            margin: 20px 0;
-            border-left: 3px solid #d4af37;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
         }
         
-        .interpretation h3 {
-            color: #d4af37;
-            margin-bottom: 10px;
-            font-size: 16px;
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.5);
         }
         
-        /* Загрузка */
-        .loading {
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .ton-connect {
+            background: linear-gradient(135deg, #0088cc 0%, #00aaff 100%);
+        }
+        
+        #loading {
             text-align: center;
             padding: 40px;
         }
         
         .spinner {
-            border: 3px solid rgba(212, 175, 55, 0.1);
-            border-top: 3px solid #d4af37;
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            border-top: 4px solid #ffffff;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
@@ -286,251 +132,191 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .tarot-card {
+            width: 100%;
+            max-width: 200px;
+            margin: 20px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #2d1b69 0%, #1e0a3c 100%);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .tarot-card .emoji {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+        
+        .tarot-card .name {
+            font-size: 1.2em;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .tarot-card .keywords {
+            color: #c79cff;
+            font-size: 0.9em;
+        }
+        
+        #result {
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <!-- Звездный фон -->
-    <div class="stars" id="stars"></div>
-    
-    <!-- Основной контейнер -->
     <div class="container">
-        <!-- Заголовок -->
-        <div class="header">
-            <h1>🔮 Храм Судьбы</h1>
-            <p>Oracle Luck Bot</p>
+        <header>
+            <h1>🔮 Oracle Luck</h1>
+            <p class="subtitle">Твой проводник в мир Таро</p>
+        </header>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>Загрузка...</p>
         </div>
         
-        <!-- Приветствие -->
-        <div class="welcome">
-            <h2>Добро пожаловать!</h2>
-            <p>
-                Я — Оракул Удачи, хранитель древних тайн Таро.
-                Выбери расклад ниже и открой свое будущее! ✨
-            </p>
-        </div>
-        
-        <!-- Расклады -->
-        <h2 style="color: #d4af37; margin-bottom: 20px; text-align: center;">
-            ✨ Выбери свой расклад
-        </h2>
-        
-        <div class="spreads-grid">
-            <div class="spread-card" onclick="getReading('daily', 1)">
-                <div class="spread-header">
-                    <div class="spread-title">🎴 Карта дня</div>
-                    <div class="spread-badge">Бесплатно</div>
-                </div>
-                <div class="spread-description">Одна карта на сегодня</div>
-                <div class="spread-details">⏱️ ~1 мин • 🎴 1 карта</div>
+        <div id="app" class="hidden">
+            <div id="tonConnect"></div>
+            
+            <div class="card">
+                <h3>💎 Премиум Доступ</h3>
+                <p>Получи безлимитный доступ ко всем раскладам!</p>
+                <div class="price">5 TON / месяц</div>
+                <button class="ton-connect" onclick="buyPremium()">
+                    💎 Купить Премиум
+                </button>
             </div>
             
-            <div class="spread-card" onclick="getReading('three', 3)">
-                <div class="spread-header">
-                    <div class="spread-title">🔮 Три карты</div>
-                    <div class="spread-badge">Бесплатно</div>
-                </div>
-                <div class="spread-description">Прошлое-Настоящее-Будущее</div>
-                <div class="spread-details">⏱️ ~2 мин • 🎴 3 карты</div>
+            <h2 style="margin: 30px 0 15px;">🎴 Расклады</h2>
+            
+            <div class="card">
+                <h3>🎴 Карта Дня</h3>
+                <p>Одна карта, которая освещает твой день</p>
+                <div class="price free-badge">🎁 Бесплатно</div>
+                <button onclick="getReading('daily')">
+                    ✨ Получить расклад
+                </button>
             </div>
             
-            <div class="spread-card" onclick="getReading('love', 5)">
-                <div class="spread-header">
-                    <div class="spread-title">💕 Отношения</div>
-                    <div class="spread-badge">Бесплатно</div>
-                </div>
-                <div class="spread-description">Глубокий анализ отношений</div>
-                <div class="spread-details">⏱️ ~3 мин • 🎴 5 карт</div>
+            <div class="card">
+                <h3>🔮 Три Карты</h3>
+                <p>Прошлое - Настоящее - Будущее</p>
+                <div class="price">0.5 TON</div>
+                <button onclick="buyReading('three_cards', 0.5)">
+                    💎 Купить расклад
+                </button>
             </div>
             
-            <div class="spread-card" onclick="getReading('career', 5)">
-                <div class="spread-header">
-                    <div class="spread-title">💼 Карьера</div>
-                    <div class="spread-badge">Бесплатно</div>
-                </div>
-                <div class="spread-description">Работа и финансы</div>
-                <div class="spread-details">⏱️ ~3 мин • 🎴 5 карт</div>
+            <div class="card">
+                <h3>💕 Отношения</h3>
+                <p>Глубокий анализ отношений</p>
+                <div class="price">1.0 TON</div>
+                <button onclick="buyReading('love', 1.0)">
+                    💎 Купить расклад
+                </button>
             </div>
             
-            <div class="spread-card" onclick="getReading('advice', 3)">
-                <div class="spread-header">
-                    <div class="spread-title">🌟 Совет дня</div>
-                    <div class="spread-badge">Бесплатно</div>
-                </div>
-                <div class="spread-description">Что нужно знать сегодня</div>
-                <div class="spread-details">⏱️ ~2 мин • 🎴 3 карты</div>
+            <div class="card">
+                <h3>⭐ Кельтский Крест</h3>
+                <p>Самый полный расклад из 10 карт</p>
+                <div class="price">2.0 TON</div>
+                <button onclick="buyReading('celtic_cross', 2.0)">
+                    💎 Купить расклад
+                </button>
             </div>
         </div>
         
-        <button class="btn" onclick="openBot()">
-            🤖 Открыть бота в Telegram
-        </button>
-        
-        <!-- Футер -->
-        <div class="footer">
-            Создано с ✨ и 🔮 мистической энергией<br>
-            © 2025 Oracle Luck Bot
-        </div>
+        <div id="result" class="hidden"></div>
     </div>
     
-    <!-- Модальное окно -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">×</button>
-            <div id="modalContent"></div>
-        </div>
-    </div>
-
     <script>
-        // Карты Таро
-        const tarotCards = [
-            {name: "Дурак", emoji: "🃏", keywords: "новые начинания, свобода"},
-            {name: "Маг", emoji: "🎩", keywords: "мастерство, сила воли"},
-            {name: "Верховная Жрица", emoji: "👸", keywords: "интуиция, тайны"},
-            {name: "Императрица", emoji: "👑", keywords: "плодородие, изобилие"},
-            {name: "Император", emoji: "🤴", keywords: "авторитет, структура"},
-            {name: "Иерофант", emoji: "⛪", keywords: "традиции, духовность"},
-            {name: "Влюбленные", emoji: "💑", keywords: "любовь, выбор"},
-            {name: "Колесница", emoji: "🏇", keywords: "победа, контроль"},
-            {name: "Сила", emoji: "💪", keywords: "храбрость, терпение"},
-            {name: "Отшельник", emoji: "🧙", keywords: "мудрость, поиск"},
-            {name: "Колесо Фортуны", emoji: "🎡", keywords: "судьба, изменения"},
-            {name: "Справедливость", emoji: "⚖️", keywords: "честность, правда"},
-            {name: "Повешенный", emoji: "🙃", keywords: "жертва, новый взгляд"},
-            {name: "Смерть", emoji: "💀", keywords: "трансформация, конец"},
-            {name: "Умеренность", emoji: "🧘", keywords: "баланс, терпение"},
-            {name: "Дьявол", emoji: "😈", keywords: "зависимость, искушение"},
-            {name: "Башня", emoji: "🏰", keywords: "разрушение, откровение"},
-            {name: "Звезда", emoji: "⭐", keywords: "надежда, вдохновение"},
-            {name: "Луна", emoji: "🌙", keywords: "иллюзия, страхи"},
-            {name: "Солнце", emoji: "☀️", keywords: "радость, успех"},
-            {name: "Суд", emoji: "📯", keywords: "возрождение, прощение"},
-            {name: "Мир", emoji: "🌍", keywords: "завершение, целостность"}
-        ];
+        // Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
         
-        // Предсказания
-        const predictions = [
-            "Карты указывают на период важных перемен в твоей жизни.",
-            "Энергия этих карт говорит о необходимости довериться интуиции.",
-            "Расклад показывает, что ты на правильном пути.",
-            "Вселенная поддерживает твои начинания сейчас.",
-            "Время действовать - благоприятный момент для решительных шагов."
-        ];
-        
-        // Генерация звезд
-        function generateStars() {
-            const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
-            }
-        }
-        
-        // Получить расклад
-        function getReading(type, cardCount) {
-            const modal = document.getElementById('modal');
-            const content = document.getElementById('modalContent');
-            
-            // Показываем загрузку
-            content.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Карты раскрываются...</p>
-                    <p style="font-size: 14px; opacity: 0.6; margin-top: 10px;">
-                        Вселенная готовит для тебя ответ
-                    </p>
-                </div>
-            `;
-            modal.classList.add('active');
-            
-            // Симуляция получения расклада
-            setTimeout(() => {
-                const cards = getRandomCards(cardCount);
-                const prediction = predictions[Math.floor(Math.random() * predictions.length)];
-                displayReading(cards, prediction);
-            }, 2000);
-        }
-        
-        // Получить случайные карты
-        function getRandomCards(count) {
-            const shuffled = [...tarotCards].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count);
-        }
-        
-        // Показать результат
-        function displayReading(cards, prediction) {
-            const content = document.getElementById('modalContent');
-            
-            let cardsHTML = '';
-            cards.forEach(card => {
-                cardsHTML += `
-                    <div class="card-result">
-                        <div class="card-emoji">${card.emoji}</div>
-                        <div class="card-name">${card.name}</div>
-                        <div class="card-keywords">${card.keywords}</div>
-                    </div>
-                `;
-            });
-            
-            content.innerHTML = `
-                <h2 style="color: #d4af37; text-align: center; margin-bottom: 20px;">
-                    ✨ Твой Расклад
-                </h2>
-                
-                ${cardsHTML}
-                
-                <div class="interpretation">
-                    <h3>🔮 Толкование:</h3>
-                    <p>${prediction}</p>
-                </div>
-                
-                <button class="btn" onclick="closeModal()">Закрыть</button>
-                <button class="btn" style="background: rgba(255,255,255,0.1);" onclick="openBot()">
-                    🤖 Больше раскладов в боте
-                </button>
-            `;
-        }
-        
-        // Закрыть модальное окно
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-        
-        // Открыть бота
-        function openBot() {
-            // Проверяем, запущено ли в Telegram
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.close();
-            } else {
-                // Если открыто в браузере, переходим к боту
-                window.location.href = 'https://t.me/OracleLuck_Bot';
-            }
-        }
+        // TON Connect
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://your-domain.com/tonconnect-manifest.json',
+            buttonRootId: 'tonConnect'
+        });
         
         // Инициализация
-        window.onload = function() {
-            generateStars();
-            
-            // Telegram WebApp инициализация
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                tg.expand();
-                tg.ready();
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+            }, 1000);
+        });
+        
+        // Купить премиум
+        async function buyPremium() {
+            try {
+                const transaction = {
+                    validUntil: Date.now() + 5 * 60 * 1000,
+                    messages: [{
+                        address: 'UQD_WALLET_ADDRESS',
+                        amount: '5000000000', // 5 TON
+                        payload: btoa('premium_month')
+                    }]
+                };
                 
-                // Применяем цвета из темы Telegram
-                document.body.style.backgroundColor = tg.themeParams.bg_color || '#0f0c29';
+                const result = await tonConnectUI.sendTransaction(transaction);
                 
-                // Настройка главной кнопки
-                tg.MainButton.text = "🔮 Получить расклад";
-                tg.MainButton.show();
-                tg.MainButton.onClick(() => {
-                    getReading('daily', 1);
-                });
+                if (result) {
+                    tg.showAlert('✅ Премиум активирован!');
+                    tg.close();
+                }
+            } catch (error) {
+                tg.showAlert('❌ Ошибка оплаты');
+                console.error(error);
             }
-        };
+        }
+        
+        // Купить расклад
+        async function buyReading(spreadId, price) {
+            try {
+                const transaction = {
+                    validUntil: Date.now() + 5 * 60 * 1000,
+                    messages: [{
+                        address: 'UQD_WALLET_ADDRESS',
+                        amount: String(price * 1000000000),
+                        payload: btoa(`spread_${spreadId}`)
+                    }]
+                };
+                
+                const result = await tonConnectUI.sendTransaction(transaction);
+                
+                if (result) {
+                    tg.showAlert('✅ Расклад оплачен! Вернись в бот.');
+                    tg.close();
+                }
+            } catch (error) {
+                tg.showAlert('❌ Ошибка оплаты');
+                console.error(error);
+            }
+        }
+        
+        // Получить бесплатный расклад
+        function getReading(spreadId) {
+            tg.sendData(JSON.stringify({
+                action: 'get_reading',
+                spread: spreadId
+            }));
+            tg.close();
+        }
     </script>
 </body>
 </html>
