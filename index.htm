@@ -1,0 +1,3273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🔮 Оракул Удачи - Ultimate Edition</title>
+    <meta name="description" content="Полнофункциональное приложение для гаданий с ИИ, геймификацией и премиум возможностями">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#8a2be2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Cinzel:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===================== УЛУЧШЕНИЕ 1: Расширенная цветовая палитра с темной и светлой темой ===================== */
+        :root {
+            /* Primary Colors */
+            --primary: #8a2be2;
+            --primary-dark: #6a1bb2;
+            --primary-light: #a855f7;
+            --secondary: #ffd700;
+            --secondary-dark: #ffcc00;
+            --accent: #ff6b9d;
+            --accent-light: #ff8fb8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* Backgrounds */
+            --dark: #0f0f23;
+            --darker: #09091b;
+            --card-bg: rgba(20, 20, 40, 0.85);
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --premium-gradient: linear-gradient(135deg, #ffd700, #ff6b9d, #8a2be2);
+            
+            /* Text */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.85);
+            --text-muted: rgba(255, 255, 255, 0.6);
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 40px rgba(138, 43, 226, 0.4);
+            
+            /* Transitions */
+            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-2xl: 32px;
+            --radius-full: 9999px;
+        }
+
+        /* УЛУЧШЕНИЕ 2: Светлая тема с автоматическим переключением */
+        [data-theme="light"] {
+            --dark: #f0f0f5;
+            --darker: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --glass: rgba(138, 43, 226, 0.08);
+            --glass-hover: rgba(138, 43, 226, 0.12);
+            --glass-border: rgba(138, 43, 226, 0.15);
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ===================== Base Styles ===================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #1a1a3e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        /* УЛУЧШЕНИЕ 3: Анимированный фон с частицами */
+        .bg-effects {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 30%, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(255, 107, 157, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            animation: bgFloat 20s infinite alternate;
+        }
+
+        @keyframes bgFloat {
+            0% { transform: translate(-10%, -10%) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.1); }
+        }
+
+        .particles {
+            position: absolute;
+            inset: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            animation: particleFloat 15s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ===================== Container ===================== */
+        .app-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            padding-bottom: 100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* УЛУЧШЕНИЕ 4: Улучшенный заголовок с эффектом стекла */
+        .app-header {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--premium-gradient);
+            opacity: 0.05;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .header-title h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            background: var(--premium-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* УЛУЧШЕНИЕ 5: Интерактивные элементы управления в заголовке */
+        .header-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .control-btn:hover {
+            background: var(--glass-hover);
+            transform: scale(1.1);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--error);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 5px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* УЛУЧШЕНИЕ 6: Профиль пользователя с прогресс-баром */
+        .user-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--glass);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-full);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-profile-badge:hover {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .user-xp {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .user-level {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* УЛУЧШЕНИЕ 7: Статистика с улучшенным дизайном */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .stat {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .stat:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-value {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-label {
+            font-size: 0.75em;
+            color: var(--text-secondary);
+        }
+
+        .stat-trend {
+            font-size: 0.65em;
+            margin-top: var(--spacing-xs);
+            font-weight: 600;
+        }
+
+        .stat-trend.up {
+            color: var(--success);
+        }
+
+        .stat-trend.down {
+            color: var(--error);
+        }
+
+        /* УЛУЧШЕНИЕ 8: Система достижений с анимацией */
+        .achievements-container {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .achievement-progress {
+            background: var(--glass);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            border: 1px solid var(--glass-border);
+        }
+
+        .achievement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .achievement-title {
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .achievement-xp {
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--premium-gradient);
+            border-radius: var(--radius-full);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+            animation: progressShine 2s infinite;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .achievement-badge {
+            background: var(--glass);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md) var(--spacing-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid var(--glass-border);
+        }
+
+        .achievement-badge.unlocked {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(138, 43, 226, 0.2));
+            border: 2px solid var(--secondary);
+            animation: achievementUnlock 0.5s ease;
+        }
+
+        @keyframes achievementUnlock {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .achievement-badge:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-xs);
+            filter: grayscale(1);
+            opacity: 0.5;
+            transition: var(--transition);
+        }
+
+        .achievement-badge.unlocked .achievement-icon {
+            filter: none;
+            opacity: 1;
+            animation: iconPulse 2s infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .achievement-name {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            line-height: 1.2;
+        }
+
+        /* УЛУЧШЕНИЕ 9: Навигация с индикаторами */
+        .nav-container {
+            margin-bottom: var(--spacing-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--dark), transparent);
+            padding: var(--spacing-sm) 0 var(--spacing-lg);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 4px 0;
+        }
+
+        .nav-tabs::-webkit-scrollbar { 
+            display: none; 
+        }
+
+        .nav-tab {
+            flex: 0 0 auto;
+            min-width: 90px;
+            padding: var(--spacing-md) var(--spacing-sm);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--premium-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+
+        .nav-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .nav-tab-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-tab-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-tab .badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: var(--error);
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            animation: badgePulse 2s infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* ===================== Content Sections ===================== */
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        /* УЛУЧШЕНИЕ 10: Универсальные карточки с эффектами */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--premium-gradient);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card.premium {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(138, 43, 226, 0.1));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .card.premium::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-xl);
+            padding: 2px;
+            background: var(--premium-gradient);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: exclude;
+            mask-composite: exclude;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-title {
+            font-family: 'Cinzel', serif;
+            color: var(--secondary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-compact {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .card-icon:hover {
+            transform: scale(1.2) rotate(15deg);
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        /* УЛУЧШЕНИЕ 11: ML рекомендации с высокой точностью */
+        .ml-recommendations {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(138, 43, 226, 0.15));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .ml-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            background: linear-gradient(135deg, var(--info), var(--primary));
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .ml-suggestion {
+            background: var(--glass);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+        }
+
+        .ml-suggestion:hover {
+            background: var(--glass-hover);
+            transform: translateX(5px);
+            border-color: var(--info);
+        }
+
+        .ml-suggestion-icon {
+            font-size: 1.8rem;
+        }
+
+        .ml-suggestion-content {
+            flex: 1;
+        }
+
+        .ml-suggestion-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .ml-suggestion-reason {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .ml-confidence {
+            font-size: 0.85rem;
+            color: var(--success);
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.2);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        /* УЛУЧШЕНИЕ 12: Dashboard с интерактивными карточками */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .dashboard-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-lg) var(--spacing-md);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--premium-gradient);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .dashboard-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .dashboard-card:active {
+            transform: translateY(-4px) scale(0.98);
+        }
+
+        .dashboard-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-card-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* УЛУЧШЕНИЕ 13: Печенье с предсказанием (анимация) */
+        .fortune-cookie-container {
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+        }
+
+        .fortune-cookie {
+            width: 160px;
+            height: 110px;
+            margin: 0 auto var(--spacing-lg);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .fortune-cookie svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 20px rgba(255, 215, 0, 0.3));
+            transition: var(--transition);
+        }
+
+        .fortune-cookie:hover {
+            transform: scale(1.15) rotate(8deg);
+        }
+
+        .fortune-cookie:hover svg {
+            filter: drop-shadow(0 15px 30px rgba(255, 215, 0, 0.5));
+        }
+
+        .fortune-cookie.opening {
+            animation: cookieCrack 0.6s ease;
+        }
+
+        @keyframes cookieCrack {
+            0% { transform: scale(1) rotate(0); }
+            25% { transform: scale(1.1) rotate(-10deg); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .fortune-message {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(138, 43, 226, 0.2));
+            border: 2px solid var(--secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            margin-top: var(--spacing-lg);
+            display: none;
+            animation: fortuneReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes fortuneReveal {
+            from { 
+                opacity: 0; 
+                transform: scale(0.8) rotateX(-90deg); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) rotateX(0); 
+            }
+        }
+
+        .fortune-message.show {
+            display: block;
+        }
+
+        .fortune-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-bottom: var(--spacing-lg);
+            font-style: italic;
+            line-height: 1.6;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .fortune-lucky-numbers {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .lucky-number {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            animation: numberPop 0.5s ease backwards;
+        }
+
+        .lucky-number:nth-child(1) { animation-delay: 0.1s; }
+        .lucky-number:nth-child(2) { animation-delay: 0.2s; }
+        .lucky-number:nth-child(3) { animation-delay: 0.3s; }
+        .lucky-number:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes numberPop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        /* УЛУЧШЕНИЕ 14: Хрустальный шар с 3D эффектом */
+        .crystal-ball-container {
+            padding: var(--spacing-2xl) var(--spacing-lg);
+            text-align: center;
+            position: relative;
+        }
+
+        .crystal-ball {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto var(--spacing-xl);
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .crystal-ball-sphere {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, 
+                rgba(255, 255, 255, 0.4), 
+                rgba(138, 43, 226, 0.5),
+                rgba(106, 27, 178, 0.7));
+            box-shadow: 
+                inset -25px -25px 50px rgba(0, 0, 0, 0.5),
+                inset 15px 15px 30px rgba(255, 255, 255, 0.3),
+                0 25px 50px rgba(138, 43, 226, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .crystal-ball-glow {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.5), transparent);
+            animation: ballGlow 3s infinite alternate;
+        }
+
+        @keyframes ballGlow {
+            0% { transform: scale(1); opacity: 0.4; }
+            100% { transform: scale(1.3); opacity: 0.8; }
+        }
+
+        .crystal-ball:hover .crystal-ball-sphere {
+            animation: ballFloat 2.5s ease-in-out infinite;
+            box-shadow: 
+                inset -25px -25px 50px rgba(0, 0, 0, 0.5),
+                inset 15px 15px 30px rgba(255, 255, 255, 0.3),
+                0 30px 60px rgba(138, 43, 226, 0.7);
+        }
+
+        @keyframes ballFloat {
+            0%, 100% { transform: translateY(0) rotateZ(0); }
+            50% { transform: translateY(-15px) rotateZ(5deg); }
+        }
+
+        .crystal-mist {
+            position: absolute;
+            width: 160%;
+            height: 160%;
+            top: -30%;
+            left: -30%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent 60%);
+            animation: mistSwirl 12s linear infinite;
+        }
+
+        @keyframes mistSwirl {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .crystal-ball-prediction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.9rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s;
+            padding: var(--spacing-md);
+            max-width: 80%;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .crystal-ball.active .crystal-ball-prediction {
+            opacity: 1;
+        }
+
+        .crystal-ball-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* УЛУЧШЕНИЕ 15: Кнопки с анимацией и эффектами */
+        .btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            min-width: 140px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn.btn-secondary {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            box-shadow: none;
+        }
+
+        .btn.btn-secondary:hover {
+            background: var(--glass-hover);
+            border-color: var(--primary);
+        }
+
+        .btn.btn-success {
+            background: linear-gradient(135deg, var(--success), #10d990);
+        }
+
+        .btn.btn-premium {
+            background: var(--premium-gradient);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+            font-size: 0.95rem;
+            padding: var(--spacing-md) var(--spacing-2xl);
+        }
+
+        .btn.btn-premium:hover {
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* УЛУЧШЕНИЕ 16: Премиум раздел с эффектами */
+        .premium-banner {
+            background: var(--premium-gradient);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .premium-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(255, 255, 255, 0.15) 50%, 
+                transparent 70%);
+            animation: premiumShine 4s infinite;
+        }
+
+        @keyframes premiumShine {
+            0% { transform: translateX(-150%) rotate(45deg); }
+            100% { transform: translateX(150%) rotate(45deg); }
+        }
+
+        .premium-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .premium-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: var(--spacing-md);
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .premium-subtitle {
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: var(--spacing-xl);
+            font-size: 0.95rem;
+        }
+
+        .premium-features {
+            list-style: none;
+            margin: var(--spacing-xl) 0;
+            text-align: left;
+            display: inline-block;
+            max-width: 90%;
+        }
+
+        .premium-features li {
+            padding: var(--spacing-sm) 0;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+        }
+
+        .premium-features li::before {
+            content: '✨';
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .premium-price-container {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+            flex-wrap: wrap;
+        }
+
+        .price-option {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            min-width: 140px;
+            transition: var(--transition);
+        }
+
+        .price-option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(1.05);
+        }
+
+        .price-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .price-period {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: var(--spacing-xs);
+        }
+
+        /* УЛУЧШЕНИЕ 17: Чат с современным дизайном */
+        .chat-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 360px;
+            max-width: calc(100vw - 40px);
+            height: 550px;
+            max-height: 70vh;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 1px solid var(--glass-border);
+        }
+
+        .chat-container.active {
+            display: flex;
+            animation: slideUpChat 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUpChat {
+            from { 
+                transform: translateY(100%) scale(0.8); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0) scale(1); 
+                opacity: 1; 
+            }
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .chat-title {
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.95rem;
+        }
+
+        .chat-status {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: statusPulse 2s infinite;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .chat-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .message {
+            animation: messageSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 85%;
+        }
+
+        @keyframes messageSlide {
+            from { 
+                opacity: 0; 
+                transform: translateY(15px) scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            word-wrap: break-word;
+            line-height: 1.5;
+            font-size: 0.875rem;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message.ai .message-bubble {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 6px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: var(--spacing-xs);
+            text-align: right;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: var(--spacing-md);
+            background: var(--glass);
+            border-radius: var(--radius-lg);
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typingDot 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingDot {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-12px); }
+        }
+
+        .chat-input-container {
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .voice-input-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .voice-input-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-input-btn.recording {
+            animation: recordPulse 1.5s infinite;
+        }
+
+        @keyframes recordPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 107, 157, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 157, 0); }
+        }
+
+        .chat-send-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+
+        .chat-send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
+        }
+
+        .chat-send-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* УЛУЧШЕНИЕ 18: FAB кнопка чата с пульсацией */
+        .chat-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: 999;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .chat-fab:hover {
+            transform: scale(1.15);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.6);
+        }
+
+        .chat-fab:active {
+            transform: scale(1.05);
+        }
+
+        .chat-fab .notification-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 14px;
+            height: 14px;
+            background: var(--error);
+            border-radius: 50%;
+            animation: dotPulse 2s infinite;
+            border: 2px solid var(--dark);
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* УЛУЧШЕНИЕ 19: Модальное окно оплаты */
+        .payment-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: var(--spacing-md);
+            backdrop-filter: blur(5px);
+        }
+
+        .payment-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .payment-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            max-width: 450px;
+            width: 100%;
+            position: relative;
+            animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--glass-border);
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(50px) scale(0.9); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .payment-close {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background: var(--glass);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .payment-close:hover {
+            background: var(--glass-hover);
+            transform: rotate(90deg);
+        }
+
+        .payment-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        .payment-methods {
+            display: grid;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .payment-method {
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+            background: var(--glass-hover);
+            transform: translateX(5px);
+        }
+
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: rgba(138, 43, 226, 0.15);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+        }
+
+        .payment-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .payment-info {
+            flex: 1;
+        }
+
+        .payment-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .payment-description {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .payment-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+
+        /* УЛУЧШЕНИЕ 20: Уведомления (Toast) */
+        .notification-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--radius-full);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            z-index: 3000;
+            opacity: 0;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            max-width: 90vw;
+        }
+
+        .notification-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .notification-toast.success {
+            border-color: var(--success);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .notification-toast.error {
+            border-color: var(--error);
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .notification-toast.warning {
+            border-color: var(--warning);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .notification-toast.info {
+            border-color: var(--info);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        #notificationIcon {
+            font-size: 1.3rem;
+        }
+
+        #notificationText {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* ===================== История и таймлайн ===================== */
+        .history-timeline {
+            position: relative;
+            padding-left: var(--spacing-xl);
+        }
+
+        .history-timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .history-item {
+            position: relative;
+            margin-bottom: var(--spacing-xl);
+            animation: slideInLeft 0.5s ease backwards;
+        }
+
+        .history-item:nth-child(1) { animation-delay: 0.1s; }
+        .history-item:nth-child(2) { animation-delay: 0.2s; }
+        .history-item:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes slideInLeft {
+            from { 
+                opacity: 0; 
+                transform: translateX(-30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0); 
+            }
+        }
+
+        .history-dot {
+            position: absolute;
+            left: -26px;
+            top: 10px;
+            width: 14px;
+            height: 14px;
+            background: var(--primary);
+            border: 3px solid var(--card-bg);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        .history-content {
+            background: var(--glass);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .history-content:hover {
+            background: var(--glass-hover);
+            border-color: var(--primary);
+        }
+
+        .history-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .history-title {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: var(--spacing-xs);
+            font-size: 0.9rem;
+        }
+
+        .history-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===================== Календарь ===================== */
+        .calendar-widget {
+            background: var(--glass);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            border: 1px solid var(--glass-border);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .calendar-month {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: var(--spacing-xs);
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            font-weight: 500;
+        }
+
+        .calendar-day:hover {
+            background: var(--glass-hover);
+            transform: scale(1.1);
+        }
+
+        .calendar-day.today {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.4);
+        }
+
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* ===================== Responsive Design ===================== */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: var(--spacing-sm);
+                padding-bottom: 100px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-tabs {
+                gap: var(--spacing-xs);
+            }
+
+            .nav-tab {
+                min-width: 80px;
+                padding: var(--spacing-sm);
+            }
+
+            .chat-container {
+                width: 100%;
+                max-width: 100%;
+                height: 100%;
+                max-height: 100%;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+            }
+
+            .chat-container.active {
+                animation: slideUpFull 0.3s ease;
+            }
+
+            @keyframes slideUpFull {
+                from { transform: translateY(100%); }
+                to { transform: translateY(0); }
+            }
+
+            .premium-price-container {
+                flex-direction: column;
+            }
+
+            .crystal-ball {
+                width: 180px;
+                height: 180px;
+            }
+
+            .fortune-cookie {
+                width: 140px;
+                height: 95px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .achievements-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .payment-content {
+                padding: var(--spacing-lg);
+            }
+
+            .btn {
+                min-width: 120px;
+                padding: var(--spacing-sm) var(--spacing-lg);
+            }
+        }
+
+        /* ===================== Utility Classes ===================== */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-primary { color: var(--primary) !important; }
+        .text-secondary { color: var(--secondary) !important; }
+        .text-muted { color: var(--text-muted) !important; }
+        .mt-1 { margin-top: var(--spacing-xs); }
+        .mt-2 { margin-top: var(--spacing-sm); }
+        .mt-3 { margin-top: var(--spacing-md); }
+        .mt-4 { margin-top: var(--spacing-lg); }
+        .mb-1 { margin-bottom: var(--spacing-xs); }
+        .mb-2 { margin-bottom: var(--spacing-sm); }
+        .mb-3 { margin-bottom: var(--spacing-md); }
+        .mb-4 { margin-bottom: var(--spacing-lg); }
+
+        /* ===================== Loading States ===================== */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, var(--glass) 25%, var(--glass-hover) 50%, var(--glass) 75%);
+            background-size: 200% 100%;
+            animation: skeleton 1.5s infinite;
+            border-radius: var(--radius-md);
+        }
+
+        @keyframes skeleton {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <!-- Background Effects -->
+    <div class="bg-effects">
+        <div class="bg-gradient"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>🔮 Оракул Удачи</h1>
+                    <p class="header-subtitle">Ваш персональный мистический помощник</p>
+                </div>
+                <div class="header-controls">
+                    <div class="control-btn" onclick="toggleTheme()" title="Сменить тему">
+                        <span id="themeIcon">🌙</span>
+                    </div>
+                    <div class="control-btn" onclick="showNotifications()" title="Уведомления">
+                        <span>🔔</span>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile-badge" onclick="openProfile()">
+                        <div class="user-avatar">👤</div>
+                        <div class="user-info">
+                            <div class="user-xp">XP: 1,250</div>
+                            <div class="user-level">Уровень 7</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat" onclick="showStatDetail('streak')">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-value">7</div>
+                <div class="stat-label">Дней подряд</div>
+                <div class="stat-trend up">↑ 2</div>
+            </div>
+            <div class="stat" onclick="showStatDetail('readings')">
+                <div class="stat-icon">🎴</div>
+                <div class="stat-value">42</div>
+                <div class="stat-label">Гаданий</div>
+                <div class="stat-trend up">↑ 5</div>
+            </div>
+            <div class="stat" onclick="showStatDetail('accuracy')">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value">85%</div>
+                <div class="stat-label">Точность</div>
+                <div class="stat-trend down">↓ 3%</div>
+            </div>
+            <div class="stat" onclick="showStatDetail('achievements')">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Достижений</div>
+                <div class="stat-trend up">↑ 1</div>
+            </div>
+        </div>
+
+        <!-- Achievement Progress -->
+        <div class="achievements-container">
+            <div class="achievement-progress">
+                <div class="achievement-header">
+                    <span class="achievement-title">Путь к мастерству</span>
+                    <span class="achievement-xp">+125 XP до след. уровня</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 65%"></div>
+                </div>
+            </div>
+            
+            <div class="achievements-grid">
+                <div class="achievement-badge unlocked" onclick="showAchievement('first_reading')">
+                    <div class="achievement-icon">🌟</div>
+                    <div class="achievement-name">Первое гадание</div>
+                </div>
+                <div class="achievement-badge unlocked" onclick="showAchievement('week_streak')">
+                    <div class="achievement-icon">🔥</div>
+                    <div class="achievement-name">Неделя подряд</div>
+                </div>
+                <div class="achievement-badge" onclick="showAchievement('master')">
+                    <div class="achievement-icon">👑</div>
+                    <div class="achievement-name">Мастер</div>
+                </div>
+                <div class="achievement-badge" onclick="showAchievement('collector')">
+                    <div class="achievement-icon">💎</div>
+                    <div class="achievement-name">Коллекционер</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-container">
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="switchTab('home', this)">
+                    <div class="nav-tab-content">
+                        <span class="nav-tab-icon">🏠</span>
+                        <span class="nav-tab-label">Главная</span>
+                    </div>
+                </div>
+                <div class="nav-tab" onclick="switchTab('daily', this)">
+                    <div class="nav-tab-content">
+                        <span class="nav-tab-icon">🌅</span>
+                        <span class="nav-tab-label">Ежедневные</span>
+                    </div>
+                </div>
+                <div class="nav-tab" onclick="switchTab('tarot', this)">
+                    <div class="nav-tab-content">
+                        <span class="nav-tab-icon">🃏</span>
+                        <span class="nav-tab-label">Таро</span>
+                    </div>
+                </div>
+                <div class="nav-tab" onclick="switchTab('numerology', this)">
+                    <div class="nav-tab-content">
+                        <span class="nav-tab-icon">🔢</span>
+                        <span class="nav-tab-label">Нумерология</span>
+                    </div>
+                </div>
+                <div class="nav-tab" onclick="switchTab('entertainment', this)">
+                    <div class="nav-tab-content">
+                        <span class="nav-tab-icon">🎮</span>
+                        <span class="nav-tab-label">Развлечения</span>
+                    </div>
+                </div>
+                <div class="nav-tab" onclick="switchTab('premium', this)">
+                    <div class="nav-tab-content">
+                        <span class="nav-tab-icon">💎</span>
+                        <span class="nav-tab-label">Premium</span>
+                    </div>
+                    <span class="badge">NEW</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Sections -->
+        
+        <!-- Home Section -->
+        <div class="content-section active" id="home">
+            <!-- ML Recommendations -->
+            <div class="ml-recommendations">
+                <div class="ml-badge">
+                    <span>🤖</span>
+                    <span>ИИ Рекомендации</span>
+                </div>
+                <div class="ml-suggestion" onclick="performRecommendation('tarot')">
+                    <span class="ml-suggestion-icon">🃏</span>
+                    <div class="ml-suggestion-content">
+                        <div class="ml-suggestion-title">Расклад "Три карты" идеален для вас сегодня</div>
+                        <div class="ml-suggestion-reason">На основе вашей активности</div>
+                    </div>
+                    <span class="ml-confidence">92%</span>
+                </div>
+                <div class="ml-suggestion" onclick="performRecommendation('numerology')">
+                    <span class="ml-suggestion-icon">🔢</span>
+                    <div class="ml-suggestion-content">
+                        <div class="ml-suggestion-title">Проверьте совместимость по нумерологии</div>
+                        <div class="ml-suggestion-reason">Популярно среди пользователей вашего уровня</div>
+                    </div>
+                    <span class="ml-confidence">87%</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card" onclick="checkMood()">
+                    <div class="dashboard-card-icon">😊</div>
+                    <div class="dashboard-card-title">Настроение</div>
+                    <div class="dashboard-card-value">Отличное</div>
+                </div>
+                <div class="dashboard-card" onclick="getLuckyNumbers()">
+                    <div class="dashboard-card-icon">🎲</div>
+                    <div class="dashboard-card-title">Счастливые числа</div>
+                    <div class="dashboard-card-value">7, 14, 21</div>
+                </div>
+                <div class="dashboard-card" onclick="openCalendar()">
+                    <div class="dashboard-card-icon">📅</div>
+                    <div class="dashboard-card-title">События</div>
+                    <div class="dashboard-card-value">3 сегодня</div>
+                </div>
+                <div class="dashboard-card" onclick="viewHistory()">
+                    <div class="dashboard-card-icon">📖</div>
+                    <div class="dashboard-card-title">История</div>
+                    <div class="dashboard-card-value">42 гадания</div>
+                </div>
+            </div>
+
+            <!-- Fortune Cookie -->
+            <div class="card">
+                <h3 class="text-center mb-3">🥠 Печенье с предсказанием</h3>
+                <p class="text-center text-muted mb-3">Одно бесплатное печенье каждый день!</p>
+                <div class="fortune-cookie-container">
+                    <div class="fortune-cookie" onclick="openFortuneCookie()" id="fortuneCookie">
+                        <svg viewBox="0 0 150 100">
+                            <ellipse cx="75" cy="50" rx="70" ry="45" fill="#f4d03f" stroke="#e5b82c" stroke-width="2"/>
+                            <path d="M 30 50 Q 75 30, 120 50" fill="none" stroke="#e5b82c" stroke-width="1.5"/>
+                            <text x="75" y="55" text-anchor="middle" fill="#8b6914" font-size="10" font-family="Arial">Нажми меня!</text>
+                        </svg>
+                    </div>
+                    <div class="fortune-message" id="fortuneMessage">
+                        <div class="fortune-text" id="fortuneText"></div>
+                        <div class="fortune-lucky-numbers" id="fortuneNumbers"></div>
+                        <button class="btn btn-secondary mt-3" onclick="shareFortune()">📤 Поделиться</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crystal Ball -->
+            <div class="card">
+                <h3 class="text-center mb-3">🔮 Хрустальный шар</h3>
+                <div class="crystal-ball-container">
+                    <div class="crystal-ball" onclick="activateCrystalBall()" id="crystalBall">
+                        <div class="crystal-ball-glow"></div>
+                        <div class="crystal-ball-sphere">
+                            <div class="crystal-mist"></div>
+                            <div class="crystal-ball-prediction" id="crystalPrediction">
+                                Нажмите для предсказания
+                            </div>
+                        </div>
+                    </div>
+                    <div class="crystal-ball-buttons">
+                        <button class="btn btn-secondary" onclick="askQuestion()">❓ Задать вопрос</button>
+                        <button class="btn btn-primary" onclick="revealFuture()">✨ Раскрыть будущее</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Widget -->
+            <div class="calendar-widget">
+                <div class="calendar-header">
+                    <button class="btn btn-secondary" style="width: auto; padding: 8px 12px; min-width: auto;" onclick="prevMonth()">◀</button>
+                    <h4 class="calendar-month">Октябрь 2024</h4>
+                    <button class="btn btn-secondary" style="width: auto; padding: 8px 12px; min-width: auto;" onclick="nextMonth()">▶</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar days will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- History Timeline -->
+            <div class="card">
+                <h3 class="mb-3">📜 Недавняя история</h3>
+                <div class="history-timeline">
+                    <div class="history-item">
+                        <div class="history-dot"></div>
+                        <div class="history-content">
+                            <div class="history-date">Сегодня, 14:30</div>
+                            <div class="history-title">Расклад Таро "Три карты"</div>
+                            <div class="history-description">Прошлое: Шут, Настоящее: Маг, Будущее: Солнце</div>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-dot"></div>
+                        <div class="history-content">
+                            <div class="history-date">Вчера, 20:15</div>
+                            <div class="history-title">Нумерологический расчет</div>
+                            <div class="history-description">Число жизненного пути: 7</div>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-dot"></div>
+                        <div class="history-content">
+                            <div class="history-date">2 дня назад</div>
+                            <div class="history-title">Печенье с предсказанием</div>
+                            <div class="history-description">Удача улыбнется вам в неожиданный момент</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Section -->
+        <div class="content-section" id="daily">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🌅 Ежедневные предсказания</h3>
+                </div>
+                <div class="dashboard-grid mb-4">
+                    <div class="dashboard-card" onclick="getDailyCard()">
+                        <div class="dashboard-card-icon">🃏</div>
+                        <div class="dashboard-card-title">Карта дня</div>
+                        <div class="dashboard-card-value">Получить</div>
+                    </div>
+                    <div class="dashboard-card" onclick="getDailyMood()">
+                        <div class="dashboard-card-icon">😊</div>
+                        <div class="dashboard-card-title">Настроение</div>
+                        <div class="dashboard-card-value">Узнать</div>
+                    </div>
+                    <div class="dashboard-card" onclick="getDailyNumbers()">
+                        <div class="dashboard-card-icon">🍀</div>
+                        <div class="dashboard-card-title">Счастливые числа</div>
+                        <div class="dashboard-card-value">Показать</div>
+                    </div>
+                    <div class="dashboard-card" onclick="getDailyAffirmation()">
+                        <div class="dashboard-card-icon">✨</div>
+                        <div class="dashboard-card-title">Аффирмация</div>
+                        <div class="dashboard-card-value">Получить</div>
+                    </div>
+                </div>
+
+                <div id="dailyResultsContainer"></div>
+            </div>
+        </div>
+
+        <!-- Tarot Section -->
+        <div class="content-section" id="tarot">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🃏 Расклады Таро</h3>
+                </div>
+                <p class="card-desc">Выберите расклад для получения ответов на ваши вопросы</p>
+                
+                <button class="btn btn-success mb-3" onclick="doTarotReading('three')">
+                    🃏 Расклад "Три карты"
+                </button>
+                <p class="text-muted mb-4" style="font-size: 0.85rem;">Узнайте о своем прошлом, настоящем и будущем</p>
+
+                <button class="btn btn-primary mb-3" onclick="doTarotReading('love')">
+                    💝 Расклад "Отношения"
+                </button>
+                <p class="text-muted mb-4" style="font-size: 0.85rem;">Получите советы по улучшению коммуникации с партнером</p>
+
+                <button class="btn btn-primary mb-3" onclick="doTarotReading('career')">
+                    💼 Расклад "Карьера и финансы"
+                </button>
+                <p class="text-muted mb-4" style="font-size: 0.85rem;">Прогноз по профессиональному развитию</p>
+
+                <div class="card premium mt-4">
+                    <div class="card-title">Кельтский крест</div>
+                    <p class="card-desc">Один из самых подробных расkladov для глубокого понимания ситуации</p>
+                    <button class="btn btn-premium" onclick="showPremiumFeature()">
+                        ⭐ Premium расклад
+                    </button>
+                </div>
+
+                <div id="tarotResultsContainer"></div>
+            </div>
+        </div>
+
+        <!-- Numerology Section -->
+        <div class="content-section" id="numerology">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🔢 Нумерологические расчеты</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ваше имя</label>
+                    <input type="text" class="chat-input" id="userName" placeholder="Введите ваше имя" style="width: 100%; border-radius: 12px;">
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label class="form-label">Дата рождения</label>
+                    <input type="date" class="chat-input" id="userBirthdate" style="width: 100%; border-radius: 12px;">
+                </div>
+
+                <button class="btn btn-success mt-3" onclick="calculateNumerology()">
+                    🔢 Рассчитать число жизненного пути
+                </button>
+
+                <div id="numerologyResultContainer"></div>
+
+                <div class="card mt-4">
+                    <div class="card-title">💑 Совместимость по числам</div>
+                    <p class="card-desc">Узнайте, насколько вы совместимы с вашим партнером</p>
+                    <button class="btn btn-primary" onclick="calculateCompatibility()">
+                        Рассчитать совместимость
+                    </button>
+                </div>
+
+                <div class="card premium mt-4">
+                    <div class="card-title">📅 Годовой прогноз</div>
+                    <p class="card-desc">Получите прогноз на текущий год на основе вашей нумерологии</p>
+                    <button class="btn btn-premium" onclick="showPremiumFeature()">
+                        ⭐ Premium прогноз
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entertainment Section -->
+        <div class="content-section" id="entertainment">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🎮 Развлечения</h3>
+                </div>
+
+                <div class="dashboard-grid mb-4">
+                    <div class="dashboard-card" onclick="startQuiz()">
+                        <div class="dashboard-card-icon">🧠</div>
+                        <div class="dashboard-card-title">Викторина</div>
+                        <div class="dashboard-card-value">Начать</div>
+                    </div>
+                    <div class="dashboard-card" onclick="showChallenges()">
+                        <div class="dashboard-card-icon">🎯</div>
+                        <div class="dashboard-card-title">Челленджи</div>
+                        <div class="dashboard-card-value">3/5</div>
+                    </div>
+                    <div class="dashboard-card" onclick="openMeditation()">
+                        <div class="dashboard-card-icon">🧘</div>
+                        <div class="dashboard-card-title">Медитация</div>
+                        <div class="dashboard-card-value">5 мин</div>
+                    </div>
+                    <div class="dashboard-card" onclick="dreamJournal()">
+                        <div class="dashboard-card-icon">🌙</div>
+                        <div class="dashboard-card-title">Сонник</div>
+                        <div class="dashboard-card-value">Записать</div>
+                    </div>
+                </div>
+
+                <div id="entertainmentContent"></div>
+            </div>
+        </div>
+
+        <!-- Premium Section -->
+        <div class="content-section" id="premium">
+            <div class="premium-banner">
+                <div class="premium-content">
+                    <h2 class="premium-title">🌟 Premium Оракул</h2>
+                    <p class="premium-subtitle">Откройте полный потенциал мистических знаний</p>
+                    
+                    <ul class="premium-features">
+                        <li>Неограниченные гадания каждый день</li>
+                        <li>Эксклюзивные расклады Таро</li>
+                        <li>Персональный ИИ-консультант</li>
+                        <li>Детальные астрологические прогнозы</li>
+                        <li>Синхронизация с календарем</li>
+                        <li>Приоритетная поддержка 24/7</li>
+                        <li>Без рекламы</li>
+                    </ul>
+                    
+                    <div class="premium-price-container">
+                        <div class="price-option">
+                            <div class="price-amount">299₽</div>
+                            <div class="price-period">в месяц</div>
+                        </div>
+                        <div class="price-option">
+                            <div class="price-amount">0.5 TON</div>
+                            <div class="price-period">криптовалюта</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-premium" onclick="openPayment()">
+                        💎 Активировать Premium
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title mb-3">💰 История платежей</h3>
+                <p class="text-muted">У вас пока нет активных подписок</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Container -->
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <div class="chat-title">
+                <div class="chat-status"></div>
+                <span>Мистический советник</span>
+            </div>
+            <button class="chat-close" onclick="toggleChat()">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai">
+                <div class="message-bubble">
+                    Здравствуйте! Я ваш персональный мистический советник. Чем могу помочь сегодня? 🔮
+                </div>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение..." onkeypress="handleChatKeyPress(event)">
+            <button class="voice-input-btn" onclick="startVoiceInput()" title="Голосовой ввод">
+                🎤
+            </button>
+            <button class="chat-send-btn" onclick="sendMessage()">
+                ➤
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat FAB -->
+    <button class="chat-fab" onclick="toggleChat()">
+        💬
+        <div class="notification-dot"></div>
+    </button>
+
+    <!-- Payment Modal -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-content">
+            <button class="payment-close" onclick="closePayment()">×</button>
+            <h3 class="payment-title">Выберите способ оплаты</h3>
+            
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectPayment('card', this)">
+                    <div class="payment-icon">💳</div>
+                    <div class="payment-info">
+                        <div class="payment-name">Банковская карта</div>
+                        <div class="payment-description">Visa, Mastercard, Мир</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectPayment('ton', this)">
+                    <div class="payment-icon">💎</div>
+                    <div class="payment-info">
+                        <div class="payment-name">TON Криптовалюта</div>
+                        <div class="payment-description">Быстро и анонимно</div>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectPayment('mobile', this)">
+                    <div class="payment-icon">📱</div>
+                    <div class="payment-info">
+                        <div class="payment-name">Мобильный платеж</div>
+                        <div class="payment-description">С баланса телефона</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-actions">
+                <button class="btn btn-secondary" onclick="closePayment()" style="flex: 1;">Отмена</button>
+                <button class="btn btn-primary" onclick="processPayment()" style="flex: 1;">Продолжить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notificationToast">
+        <span id="notificationIcon">✨</span>
+        <span id="notificationText">Уведомление</span>
+    </div>
+
+    <script>
+        // ===================== APPLICATION STATE =====================
+        const APP_STATE = {
+            user: {
+                id: 'user_' + Date.now(),
+                name: 'Пользователь',
+                level: 7,
+                xp: 1250,
+                xpToNext: 2000,
+                streak: 7,
+                isPremium: false,
+                achievements: ['first_reading', 'week_streak'],
+                preferences: {
+                    theme: 'dark',
+                    notifications: true,
+                    language: 'ru'
+                }
+            },
+            daily: {
+                fortuneCookieUsed: false,
+                lastCookieDate: null,
+                predictions: []
+            },
+            history: [],
+            currentChat: [],
+            selectedPaymentMethod: null,
+            crystalBallActive: false
+        };
+
+        // ===================== TAROT DATA =====================
+        const tarotCards = [
+            { name: "Шут", desc: "Новое начало, спонтанность, искренность" },
+            { name: "Маг", desc: "Воля, мастерство, концентрация" },
+            { name: "Жрица", desc: "Интуиция, тайны, подсознание" },
+            { name: "Императрица", desc: "Изобилие, плодородие, женственность" },
+            { name: "Император", desc: "Власть, структура, контроль" },
+            { name: "Иерофант", desc: "Традиции, учение, духовность" },
+            { name: "Влюбленные", desc: "Выбор, союз, гармония" },
+            { name: "Колесница", desc: "Успех, воля, движение вперед" },
+            { name: "Сила", desc: "Храбрость, внутренняя сила, терпение" },
+            { name: "Отшельник", desc: "Интроспекция, мудрость, поиск истины" },
+            { name: "Колесо Фортуны", desc: "Судьба, перемены, циклы" },
+            { name: "Правосудие", desc: "Баланс, истина, карма" },
+            { name: "Повешенный", desc: "Жертва, новое видение, пауза" },
+            { name: "Смерть", desc: "Трансформация, завершение, перемены" },
+            { name: "Умеренность", desc: "Баланс, терпение, умеренность" },
+            { name: "Дьявол", desc: "Привязанности, искушения, материализм" },
+            { name: "Башня", desc: "Катастрофа, внезапные перемены, пробуждение" },
+            { name: "Звезда", desc: "Надежда, вдохновение, исцеление" },
+            { name: "Луна", desc: "Иллюзии, интуиция, подсознание" },
+            { name: "Солнце", desc: "Радость, успех, энергия" },
+            { name: "Суд", desc: "Возрождение, прощение, внутренний голос" },
+            { name: "Мир", desc: "Завершение, гармония, интеграция" }
+        ];
+
+        const fortunes = [
+            'Удача улыбнется вам в неожиданный момент',
+            'Новая встреча изменит вашу жизнь',
+            'Следуйте за своей интуицией сегодня',
+            'Важное сообщение придет до заката',
+            'Ваша доброта вернется к вам втройне',
+            'Смелость приведет к успеху',
+            'Время для новых начинаний настало',
+            'Доверяйте процессу - все идет как надо'
+        ];
+
+        const crystalPredictions = [
+            'Ваше желание сбудется в ближайшее время',
+            'Будьте осторожны в финансовых вопросах этой недели',
+            'Встретитесь со старым другом, который принесет хорошие новости',
+            'Ваш интуитивный голос сейчас особенно силен, доверьтесь ему',
+            'Новое предложение на работе откроет новые возможности для роста',
+            'Любовь ждет вас за углом, будьте открыты новым знакомствам',
+            'Ваше терпение будет вознаграждено очень скоро',
+            'Пришло время для перемен, не бойтесь рисковать'
+        ];
+
+        // ===================== INITIALIZATION =====================
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            loadUserData();
+            checkDailyReset();
+            initializeParticles();
+            generateCalendar();
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('Добро пожаловать в Оракул Удачи!', 'info');
+            }, 1000);
+        });
+
+        function initializeApp() {
+            const savedState = localStorage.getItem('appState');
+            if (savedState) {
+                try {
+                    Object.assign(APP_STATE, JSON.parse(savedState));
+                } catch (e) {
+                    console.error('Error loading saved state:', e);
+                }
+            }
+            
+            document.body.setAttribute('data-theme', APP_STATE.user.preferences.theme);
+            updateThemeIcon();
+            updateUI();
+        }
+
+        function loadUserData() {
+            updateProgress();
+        }
+
+        function checkDailyReset() {
+            const today = new Date().toDateString();
+            if (APP_STATE.daily.lastCookieDate !== today) {
+                APP_STATE.daily.fortuneCookieUsed = false;
+                APP_STATE.daily.lastCookieDate = today;
+                saveState();
+            }
+        }
+
+        function initializeParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                particle.style.animationDuration = `${15 + Math.random() * 10}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function generateCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            if (!grid) return;
+            
+            const today = new Date().getDate();
+            for (let i = 1; i <= 7; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day';
+                if (i === today % 7) day.classList.add('today');
+                if (i === 3) day.classList.add('has-event');
+                day.textContent = i;
+                day.onclick = () => showCalendarDay(i);
+                grid.appendChild(day);
+            }
+        }
+
+        // ===================== THEME TOGGLE =====================
+        function toggleTheme() {
+            const currentTheme = APP_STATE.user.preferences.theme;
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            APP_STATE.user.preferences.theme = newTheme;
+            document.body.setAttribute('data-theme', newTheme);
+            updateThemeIcon();
+            saveState();
+            showNotification(`Тема изменена на ${newTheme === 'dark' ? 'темную' : 'светлую'}`, 'info');
+        }
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.textContent = APP_STATE.user.preferences.theme === 'dark' ? '🌙' : '☀️';
+            }
+        }
+
+        // ===================== NAVIGATION =====================
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            if (element) element.classList.add('active');
+            
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            const targetSection = document.getElementById(tabName);
+            if (targetSection) targetSection.classList.add('active');
+            
+            trackUserAction('tab_switch', tabName);
+        }
+
+        // ===================== FORTUNE COOKIE =====================
+        function openFortuneCookie() {
+            if (APP_STATE.daily.fortuneCookieUsed) {
+                showNotification('Вы уже использовали бесплатное печенье сегодня! Попробуйте завтра.', 'warning');
+                return;
+            }
+            
+            const cookie = document.getElementById('fortuneCookie');
+            const message = document.getElementById('fortuneMessage');
+            
+            cookie.classList.add('opening');
+            
+            setTimeout(() => {
+                const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+                const numbers = generateLuckyNumbers(4);
+                
+                document.getElementById('fortuneText').textContent = fortune;
+                document.getElementById('fortuneNumbers').innerHTML = numbers.map(n => 
+                    `<div class="lucky-number">${n}</div>`
+                ).join('');
+                
+                message.classList.add('show');
+                cookie.classList.remove('opening');
+                APP_STATE.daily.fortuneCookieUsed = true;
+                saveState();
+                
+                addXP(10);
+                trackUserAction('fortune_cookie_opened', fortune);
+            }, 600);
+        }
+
+        function shareFortune() {
+            const text = document.getElementById('fortuneText').textContent;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Мое предсказание',
+                    text: text
+                });
+            } else {
+                navigator.clipboard.writeText(text);
+                showNotification('Предсказание скопировано!', 'success');
+            }
+        }
+
+        // ===================== CRYSTAL BALL =====================
+        function activateCrystalBall() {
+            const ball = document.getElementById('crystalBall');
+            const prediction = document.getElementById('crystalPrediction');
+            
+            if (APP_STATE.crystalBallActive) {
+                APP_STATE.crystalBallActive = false;
+                ball.classList.remove('active');
+                prediction.textContent = 'Нажмите для предсказания';
+                return;
+            }
+            
+            APP_STATE.crystalBallActive = true;
+            ball.classList.add('active');
+            prediction.textContent = 'Загрузка предсказания...';
+            
+            setTimeout(() => {
+                const randomPrediction = crystalPredictions[Math.floor(Math.random() * crystalPredictions.length)];
+                prediction.textContent = randomPrediction;
+                addXP(5);
+            }, 2000);
+        }
+
+        function askQuestion() {
+            const question = prompt('Задайте ваш вопрос хрустальному шару:');
+            if (question) {
+                showNotification('Шар обдумывает ваш вопрос...', 'info');
+                setTimeout(() => {
+                    const answers = [
+                        'Определенно да',
+                        'Знаки указывают на да',
+                        'Будущее туманно, попробуйте позже',
+                        'Не рассчитывайте на это',
+                        'Мой ответ - нет'
+                    ];
+                    const answer = answers[Math.floor(Math.random() * answers.length)];
+                    showNotification(`Хрустальный шар отвечает: ${answer}`, 'info');
+                    addXP(5);
+                }, 2000);
+            }
+        }
+
+        function revealFuture() {
+            showNotification('Раскрываем завесу будущего...', 'info');
+            setTimeout(() => {
+                const futures = [
+                    'В ближайшие 3 дня вас ждет приятный сюрприз',
+                    'Финансовая удача придет с неожиданной стороны',
+                    'Новое знакомство откроет интересные возможности',
+                    'Творческий прорыв случится на следующей неделе'
+                ];
+                const future = futures[Math.floor(Math.random() * futures.length)];
+                showNotification(`Ваше будущее: ${future}`, 'success');
+                addXP(15);
+            }, 2000);
+        }
+
+        // ===================== DAILY PREDICTIONS =====================
+        function getDailyCard() {
+            const card = tarotCards[Math.floor(Math.random() * tarotCards.length)];
+            const container = document.getElementById('dailyResultsContainer');
+            
+            container.innerHTML = `
+                <div class="card premium mt-4">
+                    <div class="card-title">🃏 Карта дня: ${card.name}</div>
+                    <p class="card-desc">${card.desc}</p>
+                    <button class="btn btn-secondary mt-3" onclick="getDailyCard()">Получить новую карту</button>
+                </div>
+            `;
+            
+            addXP(5);
+            showNotification(`Ваша карта дня: ${card.name}`, 'success');
+        }
+
+        function getDailyMood() {
+            const moods = ['Радость', 'Спокойствие', 'Энергия', 'Гармония', 'Оптимизм', 'Вдохновение'];
+            const mood = moods[Math.floor(Math.random() * moods.length)];
+            
+            showNotification(`Ваше настроение дня: ${mood}`, 'success');
+            addXP(3);
+        }
+
+        function getDailyNumbers() {
+            const numbers = generateLuckyNumbers(3);
+            showNotification(`Ваши счастливые числа: ${numbers.join(', ')}`, 'success');
+            addXP(3);
+        }
+
+        function getDailyAffirmation() {
+            const affirmations = [
+                'Я привлекаю в свою жизнь положительную энергию и успех',
+                'Каждый день я становлюсь лучше и достигаю своих целей',
+                'Я достоин любви, счастья и изобилия',
+                'Мои возможности безграничны, я верю в себя',
+                'Я создаю свою реальность с помощью позитивных мыслей'
+            ];
+            const affirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
+            
+            showNotification(`Аффирмация: "${affirmation}"`, 'success');
+            addXP(3);
+        }
+
+        // ===================== TAROT READING =====================
+        function doTarotReading(type) {
+            const container = document.getElementById('tarotResultsContainer');
+            const cardCount = type === 'three' ? 3 : 1;
+            const cards = [];
+            
+            for (let i = 0; i < cardCount; i++) {
+                cards.push(tarotCards[Math.floor(Math.random() * tarotCards.length)]);
+            }
+            
+            let html = '<div class="card premium mt-4"><div class="card-title">🃏 Ваш расклад Таро</div>';
+            
+            if (type === 'three') {
+                const positions = ['Прошлое', 'Настоящее', 'Будущее'];
+                cards.forEach((card, index) => {
+                    html += `
+                        <div class="card mb-3" style="background: var(--glass);">
+                            <div class="card-title">${positions[index]}: ${card.name}</div>
+                            <p class="card-desc">${card.desc}</p>
+                        </div>
+                    `;
+                });
+                html += '<p class="card-desc mt-3">Ваше прошлое указывает на важные уроки, настоящее благоприятно для принятия решений, будущее сулит позитивные изменения.</p>';
+            } else {
+                html += `
+                    <div class="card-title mt-3">${cards[0].name}</div>
+                    <p class="card-desc">${cards[0].desc}</p>
+                `;
+            }
+            
+            html += '<button class="btn btn-secondary mt-3" onclick="doTarotReading(\'' + type + '\')">Сделать новый расклад</button></div>';
+            
+            container.innerHTML = html;
+            addXP(20);
+            showNotification('Расклад готов!', 'success');
+        }
+
+        // ===================== NUMEROLOGY =====================
+        function calculateNumerology() {
+            const name = document.getElementById('userName').value;
+            const birthdate = document.getElementById('userBirthdate').value;
+            
+            if (!name || !birthdate) {
+                showNotification('Пожалуйста, заполните все поля', 'warning');
+                return;
+            }
+            
+            const lifePathNumber = Math.floor(Math.random() * 9) + 1;
+            const descriptions = {
+                1: "Вы - лидер и пионер. Ваша независимость и решительность помогают вам достигать целей.",
+                2: "Вы - дипломат и партнер. Ваша способность к сотрудничеству и эмпатия делают вас отличным другом.",
+                3: "Вы - творец и коммуникатор. Ваша креативность и харизма привлекают к вам людей.",
+                4: "Вы - строитель и организатор. Ваша надежность и трудолюбие создают прочный фундамент.",
+                5: "Вы - искатель приключений. Ваша любознательность и адаптивность открывают новые горизонты.",
+                6: "Вы - опора и защитник. Ваша забота о других создает гармонию вокруг.",
+                7: "Вы - мыслитель и мистик. Ваша интуиция и аналитический ум раскрывают тайны.",
+                8: "Вы - руководитель и менеджер. Ваша амбициозность и практичность приводят к успеху.",
+                9: "Вы - гуманист и идеалист. Ваша сострадательность и щедрость меняют мир к лучшему."
+            };
+            
+            const container = document.getElementById('numerologyResultContainer');
+            container.innerHTML = `
+                <div class="card premium mt-4">
+                    <div class="card-title">Ваше число жизненного пути: ${lifePathNumber}</div>
+                    <p class="card-desc">${descriptions[lifePathNumber]}</p>
+                </div>
+            `;
+            
+            addXP(15);
+            showNotification('Расчет завершен!', 'success');
+        }
+
+        function calculateCompatibility() {
+            showNotification('Функция совместимости в разработке', 'info');
+        }
+
+        // ===================== GAMIFICATION =====================
+        function updateProgress() {
+            const progress = (APP_STATE.user.xp / APP_STATE.user.xpToNext) * 100;
+            const fill = document.getElementById('progressFill');
+            if (fill) {
+                fill.style.width = `${progress}%`;
+            }
+        }
+
+        function addXP(amount) {
+            APP_STATE.user.xp += amount;
+            if (APP_STATE.user.xp >= APP_STATE.user.xpToNext) {
+                levelUp();
+            }
+            updateProgress();
+            saveState();
+            showNotification(`+${amount} XP`, 'success');
+        }
+
+        function levelUp() {
+            APP_STATE.user.level++;
+            APP_STATE.user.xp = APP_STATE.user.xp - APP_STATE.user.xpToNext;
+            APP_STATE.user.xpToNext = Math.floor(APP_STATE.user.xpToNext * 1.5);
+            showNotification(`🎉 Поздравляем! Вы достигли уровня ${APP_STATE.user.level}!`, 'success');
+        }
+
+        function showAchievement(id) {
+            const achievements = {
+                'first_reading': {
+                    name: 'Первое гадание',
+                    description: 'Вы выполнили свое первое гадание',
+                    xp: 50
+                },
+                'week_streak': {
+                    name: 'Неделя подряд',
+                    description: 'Посещали приложение 7 дней подряд',
+                    xp: 100
+                },
+                'master': {
+                    name: 'Мастер',
+                    description: 'Достигните 10 уровня',
+                    xp: 500
+                },
+                'collector': {
+                    name: 'Коллекционер',
+                    description: 'Соберите все карты Таро',
+                    xp: 300
+                }
+            };
+            
+            const achievement = achievements[id];
+            if (achievement) {
+                showNotification(`${achievement.name}\n\n${achievement.description}\n\nНаграда: ${achievement.xp} XP`, 'info');
+            }
+        }
+
+        // ===================== CHAT =====================
+        function toggleChat() {
+            const container = document.getElementById('chatContainer');
+            container.classList.toggle('active');
+            
+            const dot = document.querySelector('.notification-dot');
+            if (dot && container.classList.contains('active')) {
+                dot.style.display = 'none';
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            showTypingIndicator();
+            setTimeout(() => {
+                const responses = [
+                    'Интересный вопрос! Карты говорят, что удача на вашей стороне.',
+                    'Звезды благоприятствуют вашим начинаниям.',
+                    'Моя интуиция подсказывает, что скоро произойдут позитивные изменения.',
+                    'Энергия вокруг вас очень сильная. Используйте этот момент.',
+                    'Доверьтесь своей интуиции - она вас не подведет.'
+                ];
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                hideTypingIndicator();
+                addChatMessage(response, 'ai');
+                addXP(2);
+            }, 1500);
+        }
+
+        function addChatMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `<div class="message-bubble">${text}</div>`;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const indicator = document.createElement('div');
+            indicator.className = 'message ai';
+            indicator.id = 'typingIndicator';
+            indicator.innerHTML = `
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            messagesContainer.appendChild(indicator);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function startVoiceInput() {
+            showNotification('Голосовой ввод будет доступен в следующем обновлении', 'info');
+        }
+
+        // ===================== PAYMENT =====================
+        function openPayment() {
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closePayment() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function selectPayment(method, element) {
+            document.querySelectorAll('.payment-method').forEach(m => {
+                m.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            APP_STATE.selectedPaymentMethod = method;
+        }
+
+        function processPayment() {
+            if (!APP_STATE.selectedPaymentMethod) {
+                showNotification('Выберите способ оплаты', 'warning');
+                return;
+            }
+            
+            showNotification('Обработка платежа...', 'info');
+            
+            setTimeout(() => {
+                APP_STATE.user.isPremium = true;
+                saveState();
+                closePayment();
+                showNotification('🎉 Premium активирован! Добро пожаловать в мир безграничных возможностей!', 'success');
+                addXP(500);
+            }, 2000);
+        }
+
+        // ===================== UTILITIES =====================
+        function generateLuckyNumbers(count) {
+            const numbers = [];
+            while (numbers.length < count) {
+                const num = Math.floor(Math.random() * 100) + 1;
+                if (!numbers.includes(num)) {
+                    numbers.push(num);
+                }
+            }
+            return numbers.sort((a, b) => a - b);
+        }
+
+        function showNotification(text, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const icon = document.getElementById('notificationIcon');
+            const textElement = document.getElementById('notificationText');
+            
+            const icons = {
+                success: '✅',
+                warning: '⚠️',
+                error: '❌',
+                info: '✨'
+            };
+            
+            toast.className = `notification-toast ${type}`;
+            icon.textContent = icons[type] || '✨';
+            textElement.textContent = text;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function saveState() {
+            localStorage.setItem('appState', JSON.stringify(APP_STATE));
+        }
+
+        function updateUI() {
+            updateProgress();
+        }
+
+        function trackUserAction(action, data) {
+            const event = {
+                action,
+                data,
+                timestamp: new Date(),
+                userId: APP_STATE.user.id
+            };
+            console.log('Tracked:', event);
+        }
+
+        // ===================== OTHER FUNCTIONS =====================
+        function performRecommendation(type) {
+            showNotification('Открываем рекомендованное гадание...', 'info');
+            setTimeout(() => {
+                const tabIndex = type === 'tarot' ? 2 : 3;
+                const tab = document.querySelectorAll('.nav-tab')[tabIndex];
+                switchTab(type, tab);
+            }, 500);
+        }
+
+        function checkMood() {
+            const moods = ['Отличное', 'Хорошее', 'Нормальное', 'Задумчивое'];
+            const mood = moods[Math.floor(Math.random() * moods.length)];
+            showNotification(`Ваше настроение: ${mood}`, 'info');
+            addXP(3);
+        }
+
+        function getLuckyNumbers() {
+            const numbers = generateLuckyNumbers(3);
+            showNotification(`Ваши счастливые числа: ${numbers.join(', ')}`, 'success');
+            addXP(3);
+        }
+
+        function openCalendar() {
+            showNotification('Календарь синхронизирован с вашими гаданиями', 'info');
+        }
+
+        function viewHistory() {
+            showNotification('История гаданий загружена', 'info');
+        }
+
+        function openProfile() {
+            showNotification(`Профиль: Уровень ${APP_STATE.user.level}, ${APP_STATE.user.xp} XP`, 'info');
+        }
+
+        function showStatDetail(stat) {
+            const details = {
+                streak: 'Вы посещаете приложение 7 дней подряд! Продолжайте в том же духе!',
+                readings: 'Вы сделали уже 42 гадания! Каждое приближает вас к мастерству.',
+                accuracy: 'Точность ваших предсказаний составляет 85%.',
+                achievements: 'У вас 12 достижений! Продолжайте собирать коллекцию!'
+            };
+            showNotification(details[stat] || 'Информация недоступна', 'info');
+        }
+
+        function showNotifications() {
+            showNotification('У вас 3 новых уведомления:\n1. Новое достижение!\n2. Ежедневная награда\n3. Рекомендация от ИИ', 'info');
+        }
+
+        function showCalendarDay(day) {
+            showNotification(`День ${day}: Нет запланированных событий`, 'info');
+        }
+
+        function prevMonth() {
+            showNotification('Предыдущий месяц', 'info');
+        }
+
+        function nextMonth() {
+            showNotification('Следующий месяц', 'info');
+        }
+
+        function startQuiz() {
+            showNotification('Викторина запускается...', 'info');
+        }
+
+        function showChallenges() {
+            showNotification('Ежедневные задания:\n1. Сделайте расклад Таро ✓\n2. Получите карту дня ✓\n3. Запишите аффирмацию ✓\n4. Проведите медитацию\n5. Пройдите викторину', 'info');
+        }
+
+        function openMeditation() {
+            showNotification('Медитация на 5 минут начинается...', 'info');
+        }
+
+        function dreamJournal() {
+            showNotification('Дневник сновидений открыт', 'info');
+        }
+
+        function showPremiumFeature() {
+            showNotification('Эта функция доступна только для Premium пользователей', 'warning');
+            setTimeout(() => {
+                const tab = document.querySelectorAll('.nav-tab')[5];
+                switchTab('premium', tab);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
